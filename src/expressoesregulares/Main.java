@@ -16,7 +16,9 @@ public class Main {
     System.out.println("Input = " + input);
     System.out.println("\u03A3 = " + out);
     */
-    out = expressoesRegulares.GerarPalavras(20, "(10)(10|ε)(11|ε)(100|ε)*(1000)");
+    String entrada = "(10)(10|ε)(11|ε)(100|ε)*(1000)";
+    out = expressoesRegulares.GerarPalavras(20, entrada);
+    GerarAutomato.inicia(entrada);
     // FUNÇAO QUE ESCREVE NO ARQUIVO TEXTO
     FileWriter arq = new FileWriter("linguagem.txt", false);
     PrintWriter gravarArq = new PrintWriter(arq);
