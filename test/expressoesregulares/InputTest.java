@@ -1,5 +1,7 @@
 package expressoesregulares;
 
+import expressoesregulares.Input;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.Before;
 import static org.junit.Assert.assertEquals;
@@ -34,7 +36,7 @@ public class InputTest {
 
     @Test
     public void executeTest1() {
-        assertEquals(test1Expected, Input.testCalc(test1));
+        Assert.assertEquals(test1Expected, Input.testCalc(test1));
     }
 
     @Test
