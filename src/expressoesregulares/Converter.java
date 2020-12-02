@@ -1,9 +1,6 @@
 package expressoesregulares;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
+import java.util.*;
 
 
 class Parenteses {
@@ -11,76 +8,40 @@ class Parenteses {
   int posFim;
 }
 
-// [1][10]
-// [2][]
-// [3][4]
-// [5][6]
-// [7][]
-// [11][]
-// entrada: a((()()()))()
-
+class Posicao {
+  boolean marcacao;
+  String value;
+}
 public class Converter {
-  private String entrada;
-  public Converter(String entrada){
-    this.entrada = entrada;
-  }
-  boolean temParenteses = false;
-  String entradaAuxiliar;
-  //"((ab(a|b))(100|ε))";
   List<Parenteses> parentesesList = new ArrayList<>();
 
-
-  public void transformRegexToAFND(){
-    boolean inicio = true;
-    entradaAuxiliar = entrada;
-    while(temParenteses || inicio == true){
-      inicio = false;
-      temParenteses = procuraParenteses();
-    }
-
-
-//    procuraParentesesMatriz();
-//    createAFND();
+  public void transformRegexToAFND(String entrada){
+      procuraParenteses(entrada);
   }
 
-  private void procuraParentesesMatriz() {
-
-  }
-
-    private boolean procuraParenteses() {
-    int qtdParentenses = 0;
-    boolean primeiro= false;
-    StringBuilder sb = new StringBuilder(entradaAuxiliar);
-
-    Parenteses parente = new Parenteses();
-
-    for (int i = 0; i < this.entrada.length(); i++) {
-
-      if(this.entradaAuxiliar.charAt(i)== '('){
-        temParenteses = true;
-        if(primeiro == false){
-          sb.deleteCharAt(i);
-          primeiro = true;
-          parente.posIni = i;
-        }
-        qtdParentenses++;
-      }
-
-      if(this.entradaAuxiliar.charAt(i) == ')'){
-        qtdParentenses--;
-      }
-
-      if(qtdParentenses == 0){
-        parente.posFim = i;
-        parentesesList.add(parente);
-        sb.deleteCharAt(i -1);
-
-        primeiro = false;
-      }
+  private void procuraParenteses(String entrada) {
+    Map<Integer , Boolean> posicoes = new HashMap< Integer, Boolean>();
+    for (int i =0; i < entrada.length(); i ++){
+      posicoes.put( i, false);
     }
 
-    entradaAuxiliar = sb.toString();
-    return temParenteses;
+    Parenteses parenteses = new Parenteses();
+
+    for (int i = 0; i < entrada.length(); i++) {
+
+      if(entrada.charAt(i) == '(' && posicoes.get(i) == false){
+         parenteses.posIni = i;
+      }
+
+      if(entrada.charAt(i) == ')' && posicoes.get(i) == false){
+        parenteses.posFim = i;
+        posicoes.put(parenteses.posIni, true);
+        posicoes.put(parenteses.posFim, true);
+        parentesesList.add(parenteses);
+        parenteses = new Parenteses();
+        i = 0;
+      }
+    }
   }
 
   public void createAFND(){
