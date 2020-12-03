@@ -2,13 +2,26 @@ package expressoesregulares;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 public class ConverterTest {
 
   @Test
-  public void whatever () throws Exception {
+  public void executarTestMaluco ()  {
+    Converter convert = new Converter();
+    List<NFA> valoresUnitario = new ArrayList<NFA>();
 
+    valoresUnitario.add(convert.executarUnitario("a"));
+    valoresUnitario.add(convert.executarUnitario("b"));
+
+
+//    convert.executarConcatenacao(valoresUnitario.get(0), valoresUnitario.get(1));
+//    convert.executarEscolha(valoresUnitario.get(0), valoresUnitario.get(1));
+
+    convert.executarFechoDeKleene(valoresUnitario.get(0));
   }
 
   @Test
