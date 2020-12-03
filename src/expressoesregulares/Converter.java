@@ -41,13 +41,11 @@ public class Converter {
    * o parenteses maior o  nivel acoplado ao objeto da classe Parenteses
    */
   private void procuraParenteses(String entrada) {
-
     Map<Integer , Boolean> posicoes = new HashMap< Integer, Boolean>();
     Parenteses parenteses = new Parenteses();
     int nivel = 0;
 
     mapa.add(new Parenteses (0 ,( entrada.length() -1) , entrada, 0));
-
     for (int i =0; i < entrada.length(); i ++){
       posicoes.put( i, false);
     }
@@ -76,8 +74,19 @@ public class Converter {
   }
 
 
-  public boolean checaParenteses() throws NotImplementedException {
-    throw new NotImplementedException();
+  public boolean checaParenteses(String entrada) throws Exception {
+    int qtdParenteses = 0;
+    for (int i = 0; i < entrada.length(); i++) {
+      if (entrada.charAt(i) == '(')
+        qtdParenteses++;
+      if(entrada.charAt(i) == (')'))
+        qtdParenteses--;
+    }
+
+    if(qtdParenteses != 0)
+      throw new Exception("Entrada mal formatada e ou invalida");
+    else
+      return true;
   }
 
   public void createAFND(){
