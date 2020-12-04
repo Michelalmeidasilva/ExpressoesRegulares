@@ -3,11 +3,13 @@ package afnd.domain;
 
 public class Automato {
   protected boolean debug = false;
+
   protected int[] aceitacao;
   protected int estadoInicial = 0;
   protected int[][][] transicao;
   protected int[][] transicaoVazia;
   protected String alfabeto;
+
   protected String fitaDeEntrada;
 
   protected Automato(int[] aceitacao, int estadoInicial, int[][][] transicao, int[][] transicaoVazia, String alfabeto) {

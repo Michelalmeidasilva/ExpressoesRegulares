@@ -1,42 +1,18 @@
-package expressoesregulares;
-
+package expressoesregulares.conversao;
+import jdk.nashorn.internal.runtime.regexp.joni.Regex;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
-
-class Parenteses {
-  int posIni;
-  int posFim;
-  int nivel;
-  String conteudo;
-  public Parenteses(){ }
-  public Parenteses (int posIni, int posFim, String conteudo, int nivel){
-    this.posIni = posIni;
-    this.posFim = posFim;
-    this.conteudo = conteudo;
-    this.nivel = nivel;
-  }
-}
-
-class NFA{
-  String K;     //estados
-  String E;     //alfabeto
-  List<String> delta = new ArrayList(); //transicoes
-  String s;     //estado ini
-  String F;     //estado final
-
-}
-
-
 public class Converter {
   int estado = 0;
-
-
   List<Parenteses> mapa = new ArrayList<>();
 
-
-  public NFA executarUnitario(String expressao){
+  /**
+   * @param expressao
+   * @return
+   */
+  public NFA automatoUnitario(String expressao){
     NFA nfa = new NFA();
     nfa.K = estado+"," +(estado +1);
     nfa.E = expressao.toString();
@@ -47,15 +23,12 @@ public class Converter {
     return nfa;
   }
 
-
-  public String Uniao(String conjuntoA, String conjuntoB){
-    HashSet<String> uniao = new HashSet<String>();
-    uniao.add(conjuntoA);
-    uniao.add(conjuntoB);
-    return uniao.toString().replace("[", "").replace("]", "");
-  }
-
-  public NFA executarConcatenacao(NFA automato1, NFA automato2){
+  /**
+   * @param automato1
+   * @param automato2
+   * @return
+   */
+  public NFA automatoConcatenacao(NFA automato1, NFA automato2){
     NFA novoAutomato = new NFA();
 
     String estados = Uniao(automato1.K, automato2.K);
@@ -84,8 +57,7 @@ public class Converter {
    * @param automato2
    * @return
    */
-
-  public NFA executarEscolha(NFA automato1, NFA automato2){
+  public NFA automatoEscolha(NFA automato1, NFA automato2){
     NFA novoAutomato = new NFA();
     String novoEstado = (estado) + "";
     estado++;
@@ -99,13 +71,12 @@ public class Converter {
     String novaTransicao2 =novoEstado+","+'ε'+"," + automato2.s;
     novoAutomato.delta.add(novaTransicao1);
     novoAutomato.delta.add(novaTransicao2);
-
-
     return novoAutomato;
   }
 
   /**
-   * M* = ({K¹U{s,qf}},{Σ¹U{e}}, {Δ1U (s,e,s1), (s1,e,qf),(qf,e,s1) U (F1Xqf)},(s,e,s²)}},s,{qf})
+   * M =
+   ({K¹U{s,qf}},{Σ¹U{e}}, {Δ1U (s,e,s1), (s1,e,qf),(qf,e,s1) U (F1Xqf)},(s,e,s²)}},s,{qf})
    * K = K¹ + s + qf
    * E = E¹ + e
    * Δ = Δ¹ U (s,e,s¹), (s¹,e,qf),  (qf,e,s¹) U (F¹Xqf)
@@ -113,7 +84,7 @@ public class Converter {
    * F = {qf}   (novo estado final)
    * @return
    */
-  public NFA executarFechoDeKleene(NFA automato){
+  public NFA automatoFechoDeKleene(NFA automato){
     NFA novoAutomato = new NFA();
     String novoEstadoFinal = estado + "";
     estado++;
@@ -139,80 +110,48 @@ public class Converter {
     return novoAutomato;
   }
 
-
-  public void findFechoDeKleene(){
-    throw new NotImplementedException();
+  /**
+   * @param conjuntoA
+   * @param conjuntoB
+   * @return
+   */
+  public String Uniao(String conjuntoA, String conjuntoB){
+    HashSet<String> uniao = new HashSet<String>();
+    uniao.add(conjuntoA);
+    uniao.add(conjuntoB);
+    return uniao.toString().replace("[", "").replace("]", "");
   }
 
-  public void findConcatenacao(){
-    throw new NotImplementedException();
+  /**
+   * @return
+   */
+  public String findFechoDeKleene(){
+//    throw new NotImplementedException();
+    return "";
   }
 
-  public void findEscolha(){
-    throw new NotImplementedException();
-  }
-
-  public void transformRegexToAFND(String entrada){
-      procuraParenteses(entrada);
+  /**
+   * @return
+   */
+  public String findConcatenacao(){
+//    throw new NotImplementedException();
+    return "";  }
+  /**
+   * @return
+   */
+  public String findEscolha(){
+   throw new NotImplementedException();
   }
 
   /**
    * @param entrada
-   * Mapeamento de parenteses
-   * da entrada por nivel seguindo a logica
-   * de precedencia de parenteses, quanto mais profundo
-   * o parenteses maior o  nivel acoplado ao objeto da classe Parenteses
+   * @return
    */
-  private void procuraParenteses(String entrada) {
-    Map<Integer , Boolean> posicoes = new HashMap< Integer, Boolean>();
-    Parenteses parenteses = new Parenteses();
-    int nivel = 0;
-
-    mapa.add(new Parenteses (0 ,( entrada.length() -1) , entrada, 0));
-    for (int i =0; i < entrada.length(); i ++){
-      posicoes.put( i, false);
-    }
-
-    for (int i = 0; i < entrada.length(); i++) {
-      char atual= entrada.charAt(i);
-
-      if(atual == '(') nivel++;
-
-      if(atual == '(' && posicoes.get(i) == false) parenteses.posIni = i;
-
-      if(atual == ')' && posicoes.get(i) == false){
-        parenteses.posFim = i;
-        parenteses.nivel = nivel;
-        parenteses.conteudo = entrada.substring(parenteses.posIni + 1, parenteses.posFim);
-        posicoes.put(parenteses.posIni, true);
-        posicoes.put(parenteses.posFim, true);
-        mapa.add(parenteses);
-        parenteses = new Parenteses();
-        i = -1;
-        nivel = 0;
-      }
-
-      if(atual == ')' && nivel > 0)  nivel --;
-    }
+  public NFA transformRegexToAFND(Regex expressaoRegular){
+      Parenteses.procuraParenteses(mapa,"entrada" );
+      return null;
   }
 
 
-  public boolean checaParenteses(String entrada) throws Exception {
-    int qtdParenteses = 0;
-    for (int i = 0; i < entrada.length(); i++) {
-      if (entrada.charAt(i) == '(')
-        qtdParenteses++;
-      if(entrada.charAt(i) == (')'))
-        qtdParenteses--;
-    }
-
-    if(qtdParenteses != 0)
-      throw new Exception("Entrada mal formatada e ou invalida");
-    else
-      return true;
-  }
-
-  public void createAFND(){
-
-  }
 }
+
