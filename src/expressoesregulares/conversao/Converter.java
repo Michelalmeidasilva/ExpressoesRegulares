@@ -1,4 +1,5 @@
 package expressoesregulares.conversao;
+import com.sun.org.apache.bcel.internal.generic.InstructionList;
 import expressoesregulares.Regex;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
@@ -14,11 +15,15 @@ public class Converter {
    */
   public NFA automatoUnitario(Regex regex){
     NFA nfa = new NFA();
-    nfa.K = estado+"," +(estado +1);
-    nfa.E = regex.getExpression().toString();
+//    nfa.K = estado+"," +(estado +1);
+    nfa.K.add(estado + "");
+    nfa.K.add(estado+1 + "");
+//    nfa.E = regex.getExpression();
+    nfa.E.add(regex.getExpression());
     nfa.delta.add(estado +","+regex.getExpression() +"," + (estado+1) + "");
     nfa.s = estado+"";
-    nfa.F = (estado + 1) + "";
+    nfa.F.add(estado+1+"");
+//    nfa.F = (estado + 1) + "";
     estado= estado +2;
     return nfa;
   }
@@ -32,8 +37,10 @@ public class Converter {
     NFA novoAutomato = new NFA();
 
     String estados = Uniao(automato1.K, automato2.K);
+
     String alfabeto= Uniao(automato1.E, automato2.E);
     String novaTransicao = automato1.F + "," +"ε"+ "," + automato2.s;
+
 
     novoAutomato.K= estados;
     novoAutomato.E = alfabeto;
@@ -121,21 +128,25 @@ public class Converter {
    * @param conjuntoB
    * @return
    */
-  public String Uniao(String conjuntoA, String conjuntoB){
-    TreeSet<String> uniao = new TreeSet<String>();
-    conjuntoA = conjuntoA.replaceAll(",", "");
-    conjuntoB = conjuntoB.replaceAll(",", "");
-    for (int i = 0; i < conjuntoA.length(); i++) {
+  public String Uniao(List<String> conjuntoA, List<String> conjuntoB){
+    HashSet<String> uniao = new HashSet<String>();
+//    conjuntoA = conjuntoA.replaceAll(",", "");
+//    conjuntoB = conjuntoB.replaceAll(",", "");
+    for (int i = 0; i < conjuntoA.size(); i++) {
       uniao.add(conjuntoA.charAt(i)+"");
     }
 
     for (int i = 0; i < conjuntoB.length(); i++) {
-        uniao.add(conjuntoB.charAt(i)+"");
+      uniao.add(conjuntoB.charAt(i)+"");
     }
 
+    StringBuilder testBuilder = new StringBuilder();
 
-    StringBuilder testBuilder;
-    return uniao.toString();
+    for (String test : uniao) {
+      testBuilder.append(test);
+    }
+
+    return testBuilder.toString();
   }
 
   /**
@@ -156,15 +167,15 @@ public class Converter {
    * @return
    */
   public String findEscolha(){
-   throw new NotImplementedException();
+    throw new NotImplementedException();
   }
 
   /**
    * @return
    */
   public NFA transformRegexToAFND(Regex expressaoRegular){
-      Parenteses.procuraParenteses(mapa,expressaoRegular.getExpression());
-      return null;
+    Parenteses.procuraParenteses(mapa,expressaoRegular.getExpression());
+    return null;
   }
 
   public void setNfa(NFA nfa) {

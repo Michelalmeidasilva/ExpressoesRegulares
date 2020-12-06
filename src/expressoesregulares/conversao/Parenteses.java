@@ -74,3 +74,9 @@ class Parenteses {
       return true;
   }
 }
+
+class ParentesesException extends Exception{
+  public ParentesesException(String message) {
+    super(message);
+  }
+}
