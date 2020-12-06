@@ -15,16 +15,13 @@ public class Converter {
    */
   public NFA automatoUnitario(Regex regex){
     NFA nfa = new NFA();
-//    nfa.K = estado+"," +(estado +1);
     nfa.K.add(estado + "");
     nfa.K.add(estado+1 + "");
-//    nfa.E = regex.getExpression();
     nfa.E.add(regex.getExpression());
     nfa.delta.add(estado +","+regex.getExpression() +"," + (estado+1) + "");
     nfa.s = estado+"";
     nfa.F.add(estado+1+"");
-//    nfa.F = (estado + 1) + "";
-    estado= estado +2;
+    estado= estado+2;
     return nfa;
   }
 
@@ -36,11 +33,13 @@ public class Converter {
   public NFA automatoConcatenacao(NFA automato1, NFA automato2){
     NFA novoAutomato = new NFA();
 
-    String estados = Uniao(automato1.K, automato2.K);
+    List<String> estados = Uniao(automato1.K, automato2.K);
+    List<String> alfabeto= Uniao(automato1.E, automato2.E);
 
-    String alfabeto= Uniao(automato1.E, automato2.E);
-    String novaTransicao = automato1.F + "," +"ε"+ "," + automato2.s;
-
+    for (String estado: automato1.F) {
+      String novaTransicao = estado + "," +"ε"+ "," + automato2.s;
+      novoAutomato.delta.add(novaTransicao);
+    }
 
     novoAutomato.K= estados;
     novoAutomato.E = alfabeto;
@@ -50,7 +49,6 @@ public class Converter {
     novoAutomato.delta.addAll(automato1.delta);
     novoAutomato.delta.addAll(automato2.delta);
 
-    novoAutomato.delta.add(novaTransicao);
 
     return novoAutomato;
   }
@@ -67,15 +65,17 @@ public class Converter {
    */
   public NFA automatoEscolha(NFA automato1, NFA automato2){
     NFA novoAutomato = new NFA();
-    String novoEstado = (estado) + "";
+    String novoEstado = estado + "";
     estado++;
-    novoAutomato.K = Uniao(automato1.K, automato2.K + ',' + novoEstado);
-    novoAutomato.E = Uniao(automato1.E, automato2.E + "ε" ) ;
+    novoAutomato.K = Uniao(automato1.K, automato2.K);
+    novoAutomato.E = Uniao(automato1.E, automato2.E) ;
     novoAutomato.s = novoEstado;
     novoAutomato.F = Uniao(automato1.F, automato2.F);
 
     novoAutomato.delta.addAll(automato1.delta);
     novoAutomato.delta.addAll(automato2.delta);
+    novoAutomato.K.add(novoEstado);
+    novoAutomato.E.add("ε");
 
     String novaTransicao1 =novoEstado+"," + 'ε' +"," + automato1.s;
     String novaTransicao2 =novoEstado+","+'ε'+"," + automato2.s;
@@ -110,15 +110,18 @@ public class Converter {
     novoAutomato.delta.add(novaTransicao1);
     novoAutomato.delta.add(novaTransicao2);
     novoAutomato.delta.add(novaTransicao3);
-    String[] estadosFinais = automato.F.split(",");
 
-    for (int i = 0; i < estadosFinais.length ; i++) {
-      novoAutomato.delta.add(estadosFinais[i] + "," + 'ε' + ',' + novoEstadoFinal);
+    for (int i = 0; i < automato.F.size() ; i++) {
+      String novaTransicao = automato.F.get(i) + "," + 'ε' + ',' + novoEstadoFinal;
+      novoAutomato.delta.add(novaTransicao);
     }
 
-    novoAutomato.K = automato.K + "," + novoEstadoFinal + "," + novoEstadoInicial;
-    novoAutomato.E= Uniao(automato.E , "ε");
-    novoAutomato.F = novoEstadoFinal + "";
+    novoAutomato.K.addAll(automato.K);
+    novoAutomato.K.add(novoEstadoFinal);
+    novoAutomato.K.add(novoEstadoInicial);
+
+    novoAutomato.E= Uniao(automato.E , new ArrayList<String>(Collections.singleton("ε")));
+    novoAutomato.F.add(novoEstadoFinal);
     novoAutomato.s = novoEstadoInicial;
     return novoAutomato;
   }
@@ -128,53 +131,21 @@ public class Converter {
    * @param conjuntoB
    * @return
    */
-  public String Uniao(List<String> conjuntoA, List<String> conjuntoB){
+  public List<String> Uniao(List<String> conjuntoA, List<String> conjuntoB){
     HashSet<String> uniao = new HashSet<String>();
-//    conjuntoA = conjuntoA.replaceAll(",", "");
-//    conjuntoB = conjuntoB.replaceAll(",", "");
-    for (int i = 0; i < conjuntoA.size(); i++) {
-      uniao.add(conjuntoA.charAt(i)+"");
+
+    uniao.addAll(conjuntoA);
+    uniao.addAll(conjuntoB);
+
+    List<String> novoConjuntoUniao = new ArrayList<String>();
+    for ( String elemento: uniao) {
+      novoConjuntoUniao.add(elemento);
     }
 
-    for (int i = 0; i < conjuntoB.length(); i++) {
-      uniao.add(conjuntoB.charAt(i)+"");
-    }
-
-    StringBuilder testBuilder = new StringBuilder();
-
-    for (String test : uniao) {
-      testBuilder.append(test);
-    }
-
-    return testBuilder.toString();
+    return novoConjuntoUniao;
   }
 
-  /**
-   * @return
-   */
-  public String findFechoDeKleene(){
-//    throw new NotImplementedException();
-    return "";
-  }
-
-  /**
-   * @return
-   */
-  public String findConcatenacao(){
-//    throw new NotImplementedException();
-    return "";  }
-  /**
-   * @return
-   */
-  public String findEscolha(){
-    throw new NotImplementedException();
-  }
-
-  /**
-   * @return
-   */
   public NFA transformRegexToAFND(Regex expressaoRegular){
-    Parenteses.procuraParenteses(mapa,expressaoRegular.getExpression());
     return null;
   }
 
