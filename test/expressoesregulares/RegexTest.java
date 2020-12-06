@@ -1,6 +1,5 @@
 package expressoesregulares;
 
-import expressoesregulares.Input;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.Before;
@@ -9,9 +8,10 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
     
-public class InputTest {
-
+public class RegexTest {
+    Regex regex = new Regex("");
     // input test
+
     String test1 = "1*";
     String test2 = "1|0";
     String test3 = "0|1*";
@@ -36,37 +36,37 @@ public class InputTest {
 
     @Test
     public void executeTest1() {
-        Assert.assertEquals(test1Expected, Input.testCalc(test1));
+        Assert.assertEquals(test1Expected, regex.testCalc(test1));
     }
 
     @Test
     public void executeTest2() {
-        assertEquals(test2Expected, Input.testCalc(test2));
+        assertEquals(test2Expected, regex.testCalc(test2));
     }
 
     @Test
     public void executeTest3() {
-        assertEquals(test3Expected, Input.testCalc(test3));
+        assertEquals(test3Expected, regex.testCalc(test3));
     }
 
     @Test
     public void executeTest4() {
-        assertEquals(test4Expected, Input.testCalc(test4));
+        assertEquals(test4Expected, regex.testCalc(test4));
     }
 
     @Test
     public void executeTest5() {
-        assertEquals(test5Expected, Input.testCalc(test5));
+        assertEquals(test5Expected, regex.testCalc(test5));
     }
 
     @Test
     public void executeTest6() {
-        assertEquals(test6Expected, Input.testCalc(test6));
+        assertEquals(test6Expected, regex.testCalc(test6));
     }
 
     @Test
     public void executeTest7() {
-        assertEquals(test7Expected, Input.testCalc(test7));
+        assertEquals(test7Expected, regex.testCalc(test7));
     }
 
 }

@@ -1,14 +1,14 @@
-package expressoesregulares;
+package expressoesregulares.geração;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 
 public class Operators {
-    
+
     public static ArrayList<String> union (ArrayList<String> l1, ArrayList<String> l2){
         l1.addAll(l2);
-        
+
         ArrayList<String> list = new ArrayList<String>(new HashSet<>(l1));
         Collections.sort(list);
         return list;
@@ -16,7 +16,7 @@ public class Operators {
 
     public static ArrayList<String> concatenate (ArrayList<String> l1, ArrayList<String> l2){
         ArrayList<String> l3 = new ArrayList<String>();
-        
+
         for (int i = 0; i < l1.size(); i++) {
             for (int j = 0; j < l2.size(); j++) {
                 l3.add(l1.get(i).concat(l2.get(j)));
@@ -24,7 +24,7 @@ public class Operators {
         }
 
         ArrayList<String> list = new ArrayList<String>(new HashSet<>(l3));
-        Collections.sort(list);      
+        Collections.sort(list);
         return list;
     }
 
@@ -35,7 +35,7 @@ public class Operators {
         for (int i = 0; i < chain; i++) {
             l2.addAll(kleene(l2, i));
         }
-        
+
         ArrayList<String> list = new ArrayList<String>(new HashSet<>(l2));
         Collections.sort(list);
 

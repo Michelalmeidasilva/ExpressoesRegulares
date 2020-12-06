@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Random;
 
-public class ER {
-    
+public class GerarPalavras {
+
     //Alcance de aleatoriedade dos fechos de kleener
     public static int randomRange = 5;
 
@@ -142,7 +142,7 @@ public class ER {
                 }
                 //Adiciona a penultima opção a lista
                 opcoes.add(expressaoTemporaria.substring(sinal + 1, fim));
-                //Busca o inicio da expressao de alternancia 
+                //Busca o inicio da expressao de alternancia
                 while (!String.valueOf(expressaoTemporaria.toString().charAt(inicio)).equals("(")) {
                     inicio--;
                     if (inicio == -1) {

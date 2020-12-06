@@ -1,22 +1,22 @@
 package expressoesregulares.conversao;
-import jdk.nashorn.internal.runtime.regexp.joni.Regex;
+import expressoesregulares.Regex;
 import sun.reflect.generics.reflectiveObjects.NotImplementedException;
 
 import java.util.*;
 
 public class Converter {
-  int estado = 0;
+
+  static int estado = 0;
   List<Parenteses> mapa = new ArrayList<>();
 
   /**
-   * @param expressao
    * @return
    */
-  public NFA automatoUnitario(String expressao){
+  public NFA automatoUnitario(Regex regex){
     NFA nfa = new NFA();
     nfa.K = estado+"," +(estado +1);
-    nfa.E = expressao.toString();
-    nfa.delta.add(estado +","+expressao +"," + (estado+1) + "");
+    nfa.E = regex.getExpression().toString();
+    nfa.delta.add(estado +","+regex.getExpression() +"," + (estado+1) + "");
     nfa.s = estado+"";
     nfa.F = (estado + 1) + "";
     estado= estado +2;
@@ -40,8 +40,9 @@ public class Converter {
     novoAutomato.s = automato1.s;
     novoAutomato.F = automato2.F;
 
-    novoAutomato.delta.add(automato1.delta.toString().replace("[", "").replace("]", ""));
-    novoAutomato.delta.add(automato2.delta.toString().replace("[", "").replace("]", ""));
+    novoAutomato.delta.addAll(automato1.delta);
+    novoAutomato.delta.addAll(automato2.delta);
+
     novoAutomato.delta.add(novaTransicao);
 
     return novoAutomato;
@@ -62,13 +63,16 @@ public class Converter {
     String novoEstado = (estado) + "";
     estado++;
     novoAutomato.K = Uniao(automato1.K, automato2.K + ',' + novoEstado);
-    novoAutomato.E = Uniao(automato1.E, automato2.E + ",ε" ) ;
+    novoAutomato.E = Uniao(automato1.E, automato2.E + "ε" ) ;
     novoAutomato.s = novoEstado;
     novoAutomato.F = Uniao(automato1.F, automato2.F);
-    novoAutomato.delta.add(automato1.delta.toString().replace("[", "").replace("]", ""));
-    novoAutomato.delta.add(automato2.delta.toString().replace("[", "").replace("]", ""));
+
+    novoAutomato.delta.addAll(automato1.delta);
+    novoAutomato.delta.addAll(automato2.delta);
+
     String novaTransicao1 =novoEstado+"," + 'ε' +"," + automato1.s;
     String novaTransicao2 =novoEstado+","+'ε'+"," + automato2.s;
+
     novoAutomato.delta.add(novaTransicao1);
     novoAutomato.delta.add(novaTransicao2);
     return novoAutomato;
@@ -93,12 +97,14 @@ public class Converter {
     String novaTransicao1 = novoEstadoInicial+ "," +"ε," + automato.s;
     String novaTransicao2 = automato.s + "," + "ε," + novoEstadoFinal;
     String novaTransicao3 = novoEstadoFinal + "," + "ε," + automato.s;
-//    List<String> novasTransicao4= new ArrayList<>();
-    novoAutomato.delta.add(automato.delta.toString().replace("[", "").replace("]", ""));
+
+    novoAutomato.delta.addAll(automato.delta);
+
     novoAutomato.delta.add(novaTransicao1);
     novoAutomato.delta.add(novaTransicao2);
     novoAutomato.delta.add(novaTransicao3);
     String[] estadosFinais = automato.F.split(",");
+
     for (int i = 0; i < estadosFinais.length ; i++) {
       novoAutomato.delta.add(estadosFinais[i] + "," + 'ε' + ',' + novoEstadoFinal);
     }
@@ -116,10 +122,20 @@ public class Converter {
    * @return
    */
   public String Uniao(String conjuntoA, String conjuntoB){
-    HashSet<String> uniao = new HashSet<String>();
-    uniao.add(conjuntoA);
-    uniao.add(conjuntoB);
-    return uniao.toString().replace("[", "").replace("]", "");
+    TreeSet<String> uniao = new TreeSet<String>();
+    conjuntoA = conjuntoA.replaceAll(",", "");
+    conjuntoB = conjuntoB.replaceAll(",", "");
+    for (int i = 0; i < conjuntoA.length(); i++) {
+      uniao.add(conjuntoA.charAt(i)+"");
+    }
+
+    for (int i = 0; i < conjuntoB.length(); i++) {
+        uniao.add(conjuntoB.charAt(i)+"");
+    }
+
+
+    StringBuilder testBuilder;
+    return uniao.toString();
   }
 
   /**
@@ -144,14 +160,14 @@ public class Converter {
   }
 
   /**
-   * @param entrada
    * @return
    */
   public NFA transformRegexToAFND(Regex expressaoRegular){
-      Parenteses.procuraParenteses(mapa,"entrada" );
+      Parenteses.procuraParenteses(mapa,expressaoRegular.getExpression());
       return null;
   }
 
-
+  public void setNfa(NFA nfa) {
+  }
 }
 

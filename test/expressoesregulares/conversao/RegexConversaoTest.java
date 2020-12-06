@@ -1,4 +1,4 @@
 package expressoesregulares.conversao;
 
-public class Regex {
+public class RegexTest {
 }
