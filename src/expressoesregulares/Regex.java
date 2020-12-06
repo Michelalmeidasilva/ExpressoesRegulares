@@ -7,30 +7,41 @@ import java.util.HashSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Input {
-    static Pattern patternUnion = Pattern.compile("([\\wαβγδζηθι]+)(\\|)([\\wαβγδζηθι]+)");
-    static Pattern patternConcatenate = Pattern.compile("([\\wαβγδζηθι]+)(\\.)([\\wαβγδζηθι]+)");
-    static Pattern patternKleeneClosure = Pattern.compile("([\\wαβγδζηθι]+)(\\*)");
-    static String expression = new String();
+public class Regex {
+    protected Pattern patternUnion = Pattern.compile("([\\wαβγδζηθι]+)(\\|)([\\wαβγδζηθι]+)");
+    protected Pattern patternConcatenate = Pattern.compile("([\\wαβγδζηθι]+)(\\.)([\\wαβγδζηθι]+)");
+    protected Pattern patternKleeneClosure = Pattern.compile("([\\wαβγδζηθι]+)(\\*)");
+    protected String expression = new String();
+
+    public String getExpression() {
+      return expression;
+    }
 
     // α β γ δ ζ η θ ι
-    static ArrayList<String> varList = new ArrayList<String>(Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0"));
-    static ArrayList<String> alpha = new ArrayList<String>();
-    static ArrayList<String> beta = new ArrayList<String>();
-    static ArrayList<String> gama = new ArrayList<String>();
-    static ArrayList<String> delta = new ArrayList<String>();
-    static ArrayList<String> zeta = new ArrayList<String>();
-    static ArrayList<String> eta = new ArrayList<String>();
-    static ArrayList<String> theta = new ArrayList<String>();
-    static ArrayList<String> iota = new ArrayList<String>();
+    ArrayList<String> varList = new ArrayList<String>(Arrays.asList("0", "0", "0", "0", "0", "0", "0", "0"));
+    ArrayList<String> alpha = new ArrayList<String>();
+    ArrayList<String> beta = new ArrayList<String>();
+    ArrayList<String> gama = new ArrayList<String>();
+    ArrayList<String> delta = new ArrayList<String>();
+    ArrayList<String> zeta = new ArrayList<String>();
+    ArrayList<String> eta = new ArrayList<String>();
+    ArrayList<String> theta = new ArrayList<String>();
+    ArrayList<String> iota = new ArrayList<String>();
 
-    public static ArrayList<String> testCalc(String inp) {
+    public  Regex(String expression){
+         this.expression = expression;
+     }
+
+    public  Regex( ){
+    }
+
+    public  ArrayList<String> testCalc(String inp) {
         ArrayList<String> out = new ArrayList<String>();
         expression = inp;
         int validate = 0;
         while (validate != 1) {
-            // System.out.println("pass "+expression);
-            if (patternKleeneClosure.matcher(expression).find()) {
+            System.out.println("pass "+expression);
+            if (patternKleeneClosure.matcher(expression).find()){
                 out.addAll(findClosureKleene());
             } else if (patternUnion.matcher(expression).find()) {
                 out.addAll(findUnion());
@@ -40,14 +51,13 @@ public class Input {
                 validate = 1;
             }
         }
-        
         ArrayList<String> list = new ArrayList<String>(new HashSet<>(out));
         Collections.sort(list);
         list.add(0, "ε");
         return list;
     }
 
-    static ArrayList<String> defineVariable(String var) {
+     ArrayList<String> defineVariable(String var) {
         ArrayList<String> varList = new ArrayList<String>();
         switch (var) {
             case "α":
@@ -88,7 +98,7 @@ public class Input {
         return varList;
     }
 
-    static String findVariable(ArrayList<String> l1) {
+     String findVariable(ArrayList<String> l1) {
         String output = "";
         int ok = 0;
         int i = 0;
@@ -148,63 +158,61 @@ public class Input {
         return output;
     }
 
-    public static ArrayList<String> findUnion() {
+    public  ArrayList<String> findUnion() {
         ArrayList<String> output = new ArrayList<String>();
         Matcher matcher = patternUnion.matcher(expression);
         while (matcher.find()) {
-            // String match = matcher.group();
+             String match = matcher.group();
             String group1 = matcher.group(1);
             String group2 = matcher.group(3);
 
             output.addAll(Operators.union(defineVariable(group1), defineVariable(group2)));
             expression = expression.replaceFirst("([\\wαβγδζηθι\\(]+)(\\|)([\\wαβγδζηθι\\)]+)", findVariable(output));
 
-            // printAux(matcher.start(), matcher.end(), match);
+             printAux(matcher.start(), matcher.end(), match);
 
             break;
         }
-        // printVariables();
+         printVariables();
         return output;
     }
 
-    public static ArrayList<String> findConcatenate() {
+    public  ArrayList<String> findConcatenate() {
         ArrayList<String> output = new ArrayList<String>();
         Matcher matcher = patternConcatenate.matcher(expression);
         while (matcher.find()) {
-            // String match = matcher.group();
+             String match = matcher.group();
             String group1 = matcher.group(1);
             String group2 = matcher.group(3);
 
             output.addAll(Operators.concatenate(defineVariable(group1), defineVariable(group2)));
             expression = expression.replaceFirst("([\\wαβγδζηθι\\(]+)(\\.)([\\wαβγδζηθι\\)]+)", findVariable(output));
-
-            // printAux(matcher.start(), matcher.end(), match);
-
+             printAux(matcher.start(), matcher.end(), match);
             break;
         }
-        // printVariables();
+         printVariables();
         return output;
     }
 
-    public static ArrayList<String> findClosureKleene() {
+    public ArrayList<String> findClosureKleene() {
         ArrayList<String> output = new ArrayList<String>();
         Matcher matcher = patternKleeneClosure.matcher(expression);
         while (matcher.find()) {
-            // String match = matcher.group();
+             String match = matcher.group();
             String group1 = matcher.group(1);
 
             output.addAll(Operators.kleeneClosure(defineVariable(group1)));
             expression = expression.replaceFirst("([\\wαβγδζηθι]+)(\\*)", findVariable(output));
 
-            // printAux(matcher.start(), matcher.end(), match);
+             printAux(matcher.start(), matcher.end(), match);
 
             break;
         }
-        // printVariables();
+         printVariables();
         return output;
     }
 
-    static void printVariables() {
+     void printVariables() {
         System.out.println("α = " + alpha);
         System.out.println("β = " + beta);
         System.out.println("γ = " + gama);
@@ -215,7 +223,7 @@ public class Input {
         System.out.println("ι = " + iota);
     }
 
-    static void printAux(int start, int end, String match) {
+     void printAux(int start, int end, String match) {
         System.out.printf("%s - [%d,%d] \t => %s\n", match, start, end, expression);
     }
 
