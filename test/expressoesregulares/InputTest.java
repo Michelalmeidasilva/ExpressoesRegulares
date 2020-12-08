@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import java.util.ArrayList;
 import java.util.Arrays;
     
-public class RegexTest {
+public class InputTest {
     Regex regex = new Regex("");
     // input test
 
@@ -31,7 +31,6 @@ public class RegexTest {
 
     @Before
     public void setup() {
-
     }
 
     @Test
