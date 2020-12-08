@@ -7,12 +7,21 @@ import expressoesregulares.tree.Node;
 
 import java.util.*;
 
-public class Converter   {
+public class ThompsonAlgorithm   {
 
   static int estado = 0;
-//  List<Parenteses> mapa = new ArrayList<>();
 
   /**
+   * Sprint 03
+   * @author Michel Silva, Kelvin Souza
+   * Através da definição do algoritmo de thompson é instanciado um novo automato
+   * M1= (K, E, Δ, s , F )
+   * K¹ = {q0, q1}
+   * Σ¹ = {a}
+   * Δ¹ = { (q0,a,q1) }
+   * s¹= q0
+   * F¹ = {q1}
+   * ER(A) => M1 =  ( {q0, q1}, {a}, {(q0, a, q1)}, q0, {q1} )
    * @return
    */
   public NFA automatoUnitario(Regex regex){
@@ -28,13 +37,17 @@ public class Converter   {
   }
 
   /**
+   * Sprint 03
+   * @author Michel Silva, Kelvin Souza
+   * Através da definição do algoritmo de thompson é instanciado um novo automato utilizando
+   * dois outros automatos instanciados possibilitando o reconhecimento de uma escolha
    * @param automato1
    * @param automato2
    * @return
    */
   public NFA automatoConcatenacao(NFA automato1, NFA automato2){
     NFA novoAutomato = new NFA();
-
+    automato1.E.add("ε");
     List<String> estados = Uniao(automato1.K, automato2.K);
     List<String> alfabeto= Uniao(automato1.E, automato2.E);
 
@@ -51,11 +64,14 @@ public class Converter   {
     novoAutomato.delta.addAll(automato1.delta);
     novoAutomato.delta.addAll(automato2.delta);
 
-
     return novoAutomato;
   }
 
   /**
+   * Sprint 03
+   * @author Michel Silva, Kelvin Souza
+   * Através da definição do algoritmo de thompson é instanciado um novo automato utilizando
+   * dois outros automatos instanciados
    * K = União de K1 e K2 + s
    * E = União entre E1 e E2 + e
    * Δ = União entre Δ¹e Δ² + transições vazias entre s e s¹Us²
@@ -70,6 +86,7 @@ public class Converter   {
     String novoEstado = estado + "";
     estado++;
     novoAutomato.K = Uniao(automato1.K, automato2.K);
+    novoAutomato.E.add("ε");
     novoAutomato.E = Uniao(automato1.E, automato2.E) ;
     novoAutomato.s = novoEstado;
     novoAutomato.F = Uniao(automato1.F, automato2.F);
@@ -77,7 +94,6 @@ public class Converter   {
     novoAutomato.delta.addAll(automato1.delta);
     novoAutomato.delta.addAll(automato2.delta);
     novoAutomato.K.add(novoEstado);
-    novoAutomato.E.add("ε");
 
     String novaTransicao1 =novoEstado+"," + 'ε' +"," + automato1.s;
     String novaTransicao2 =novoEstado+","+'ε'+"," + automato2.s;
@@ -88,8 +104,10 @@ public class Converter   {
   }
 
   /**
-   * M =
-   ({K¹U{s,qf}},{Σ¹U{e}}, {Δ1U (s,e,s1), (s1,e,qf),(qf,e,s1) U (F1Xqf)},(s,e,s²)}},s,{qf})
+   * Sprint 03
+   * @author Michel Silva, Kelvin Souza
+   * Através da definição é transformado para um automato fecho de kleene
+   * ({K¹U{s,qf}},{Σ¹U{e}}, {Δ1U (s,e,s1), (s1,e,qf),(qf,e,s1) U (F1Xqf)},(s,e,s²)}},s,{qf})
    * K = K¹ + s + qf
    * E = E¹ + e
    * Δ = Δ¹ U (s,e,s¹), (s¹,e,qf),  (qf,e,s¹) U (F¹Xqf)
@@ -129,11 +147,14 @@ public class Converter   {
   }
 
   /**
+   * Sprint 03
+   * @author Michel Silva, Kelvin Souza
+   * União entre dois conjuntos quaisquer
    * @param conjuntoA
    * @param conjuntoB
    * @return
    */
-  public List<String> Uniao(List<String> conjuntoA, List<String> conjuntoB){
+  private List<String> Uniao(List<String> conjuntoA, List<String> conjuntoB){
     HashSet<String> uniao = new HashSet<String>();
 
     uniao.addAll(conjuntoA);
@@ -147,7 +168,14 @@ public class Converter   {
     return novoConjuntoUniao;
   }
 
-  public Node getArvore(Regex expressaoRegular){
+  /**
+   * Sprint 03
+   * obtenção da arvore sintatica de uma expressão regular
+   * @author Michel Silva, Kelvin Souza
+   * @param expressaoRegular
+   * @return
+   */
+  private Node getArvore(Regex expressaoRegular){
     Node root;
     BinaryTree bt = new BinaryTree();
     root = bt.generateTree(expressaoRegular.getExpression());
@@ -156,11 +184,22 @@ public class Converter   {
     return root;
   }
 
+  /**
+   * Sprint 03
+   * Transformação de uma Expressão regular, da classe Regex para um automato finito não deterministico.
+   * @author Michel Silva, Kelvin Souza
+   * @param expressaoRegular
+   * @return
+   */
   public NaoDeterministicoE transformRegexToAFND(Regex expressaoRegular){
+
     Node root = getArvore(expressaoRegular);
     int aceitacao[]  = root.automato.getF();
     int estadoInicial = root.automato.getS();
     int estados[]  = root.automato.getK();
+    Arrays.sort(estados);
+    Arrays.sort(aceitacao);
+
     int maxValueInMap = maxNumeroDeTransicoes(root, estados);
 
     String alfabeto = "";
@@ -174,6 +213,19 @@ public class Converter   {
     int[][][] transicoes = new int[estados.length][alfabeto.length()][maxValueInMap];
     int[][] transicoesVazias = new int[estados.length][maxValueInMap];
 
+    for (int i = 0; i < transicoes.length; i++) {
+      for (int j = 0; j < transicoes[i].length; j++) {
+        for (int k = 0; k < transicoes[i][j].length; k++) {
+          transicoes[i][j][k]= -99;
+        }
+      }
+    }
+
+    for (int j = 0; j < transicoesVazias.length; j++) {
+      for (int k = 0; k < transicoesVazias[j].length; k++) {
+        transicoesVazias[j][k]= -99;
+      }
+    }
     HashMap<Integer, ArrayList<Integer>> transicoesVaziasMap = new HashMap<>();
     List<PosicaoLinha> transicoesMap = new ArrayList<PosicaoLinha>() ;
 
@@ -196,57 +248,55 @@ public class Converter   {
       if(transicao.contains("ε")){
         transicoesVaziasMap.get(primeiraPosicao).add(terceiraParte);
       } else {
-        transicoesMap.get(primeiraPosicao).alfabetoColunas.get(segundaParte).transicao = terceiraParte;
+        transicoesMap.get(primeiraPosicao).alfabetoColunas.get(segundaParte).transicao.add(terceiraParte);
       }
     }
 
     for (int i = 0; i < transicoesVazias.length; i++) {
-      int vetor[] = new int[transicoesVaziasMap.get(i).size()];
-      for (int j = 0; j < vetor.length; j++) {
-        if(transicoesVaziasMap.get(i).get(j) != 0 ){
-          vetor[j] = transicoesVaziasMap.get(i).get(j);
+      for (int j = 0; j < transicoesVaziasMap.get(i).size(); j++) {
+        if ( transicoesVaziasMap.get(i).get(j) != null){
+          transicoesVazias[i][j]= transicoesVaziasMap.get(i).get(j);
         }
       }
-      transicoesVazias[i] = vetor;
     }
 
-    int test[][][] = new int[11][2][3];
     for (int i = 0; i < transicoes.length; i++) {
-      int[][] vetor  = new int[2][3];
-      for (int j = 0; j < transicoes[i].length; j++) {
-        int vetorTest[] = new int[3];
-        for (int k = 0; k < transicoes[i][j].length; k++) {
-          if (transicoesMap.get(i).alfabetoColunas.get(j).transicao != null) {
-            vetorTest[k] = transicoesMap.get(i).alfabetoColunas.get(j).transicao;
-          }
+      for (int j = 0; j < transicoes[i].length ; j++) {
+        for (int k = 0; k < transicoesMap.get(i).alfabetoColunas.get(j).transicao.size(); k++) {
+          transicoes[i][j][k] = transicoesMap.get(i).alfabetoColunas.get(j).transicao.get(k);
         }
-        vetor[i] = vetorTest;
       }
-      test[i] = vetor;
     }
 
-    transicoesVazias[0]= new int[]{};
-    transicoesVazias[2]= new int[]{};
-    transicoesVazias[4]= new int[]{};
-
-    NaoDeterministicoE afnd = new NaoDeterministicoE(aceitacao, estadoInicial, transicoes, transicoesVazias, alfabeto);
-    try {
-      afnd.executar("aaa");
-    } catch (IsNotBelongOnLanguage isNotBelongOnLanguage) {
-      isNotBelongOnLanguage.printStackTrace();
-    }
-    return null;
+    return  new NaoDeterministicoE(aceitacao, estadoInicial, transicoes, transicoesVazias, alfabeto);
   }
 
+  /**
+   * @param root
+   * @return
+   */
   private HashMap<String, Integer> mapearElementosDoAlfabeto(Node root) {
     HashMap<String, Integer> mapAlfabeto = new HashMap<>();
-    for (int i = 0; i < root.automato.E.size(); i++) {
-      mapAlfabeto.put(root.automato.E.get(i), i);
+    HashSet<String> exclusao = new HashSet<>();
+    for (String elemento: root.automato.E) {
+      if(elemento != "ε"){
+        exclusao.add(elemento);
+      }
     }
+    int i=0;
+    for ( String elemento: exclusao) {
+      mapAlfabeto.put(elemento, i);
+      i++;
+    }
+    mapAlfabeto.put("ε", i);
     return mapAlfabeto;
-
   }
 
+  /**
+   * @param root
+   * @param estados
+   * @return
+   */
   private int maxNumeroDeTransicoes(Node root, int[] estados) {
     HashMap <Integer, Integer> countMaxTransicoes= new HashMap<Integer, Integer>();
     for (int i = 0; i <root.automato.delta.size() ; i++) {
@@ -265,10 +315,6 @@ public class Converter   {
     return  (Collections.max(countMaxTransicoes.values()));
   }
 
-  public void setNfa(NFA nfa) {
-  }
-
-
 }
 
 
@@ -279,12 +325,10 @@ class PosicaoLinha {
 }
 //
 class AlfabetoColuna{
-  Integer transicao;
-  public AlfabetoColuna( Integer transicao) {
-    this.transicao = transicao;
+ List<Integer> transicao= new ArrayList<Integer>();
+  public AlfabetoColuna(){
   }
 
-  public AlfabetoColuna(){}
-  }
+}
 
 
