@@ -1,4 +1,6 @@
-package expressoesregulares;
+package expressoesregulares.geração;
+
+import expressoesregulares.Regex;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,10 +10,11 @@ import java.util.Random;
 public class GerarPalavras {
 
     //Alcance de aleatoriedade dos fechos de kleener
-    public static int randomRange = 5;
+    public  int randomRange = 6;
 
-    public ArrayList GerarPalavras(int numero, String expressao) {
+    public ArrayList gerarPalavras(int numero, Regex regex) {
         ArrayList<String> retorno = new ArrayList<>();
+        String expressao = regex.getExpression();
         //Remover todos os espaços brancos
         expressao = expressao.replaceAll(" ", "");
         for (int x = 0; x < numero; x++) {

@@ -1,6 +1,5 @@
 package expressoesregulares.tree;
 
-import expressoesregulares.conversao.Converter;
 import expressoesregulares.conversao.NFA;
 
 import java.util.HashSet;

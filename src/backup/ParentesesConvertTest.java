@@ -1,6 +1,7 @@
-package expressoesregulares.conversao;
+package backup;
 
-import expressoesregulares.conversao.Converter;
+import backup.Parenteses;
+import expressoesregulares.conversao.ThompsonAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,13 +15,14 @@ import static org.junit.Assert.assertEquals;
 
 @RunWith(Parameterized.class)
 public class ParentesesConvertTest {
-  Converter convert ;
+  ThompsonAlgorithm convert ;
   String entrada;
   boolean expectedResult;
 
   @Before
   public void initialize() {
-     convert = new Converter();
+
+    convert = new ThompsonAlgorithm();
   }
 
   public ParentesesConvertTest(String inputString, Boolean expectedResult) {
@@ -47,7 +49,7 @@ public class ParentesesConvertTest {
   @Test
   public void checaValidadeDeParenteses() throws Exception {
     String entrada = "(a|b (a|b))";
-    Converter convert = new Converter();
+    ThompsonAlgorithm convert = new ThompsonAlgorithm();
     assertEquals("Deve retornar uma entrada invalida", true, Parenteses.checaParenteses(entrada)) ;
   }
 

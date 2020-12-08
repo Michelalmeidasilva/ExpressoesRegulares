@@ -273,30 +273,26 @@ public class BinaryTree {
    if(node == null) {
      return;
    }
-   searchInorder(node.getLeft());
 
-   if(!(node.getSymbol().contains("*")
-     || node.getSymbol().contains("|") || node.getSymbol().contains("&"))){
+   searchInorder(node.getLeft());
+   searchInorder(node.getRight());
+   if(!(node.getSymbol().contains("*") || node.getSymbol().contains("|") || node.getSymbol().contains("&"))){
      node.automato = node.automato.converter.automatoUnitario(new Regex(node.getSymbol()));
    }
 
-   searchInorder(node.getRight());
   }
 
-  public void printInorder(Node node) {
+  public void executeInOrder(Node node) {
     if (node == null) {
       return;
     }
-
     /* first recur on left child */
-    printInorder(node.getLeft());
-
-//    System.out.print(node.getSymbol() + " ");
-
+    executeInOrder(node.getLeft());
+    executeInOrder(node.getRight());
     switch (node.getSymbol()) {
       case "&":
         NFA nfa = node.automato.converter.automatoConcatenacao(node.getLeft().automato, node.getRight().automato);
-        node.automato  = nfa;
+        node.automato = nfa;
         break;
 
       case "*":
@@ -309,16 +305,7 @@ public class BinaryTree {
         }
         node.automato = node.automato.converter.automatoEscolha(node.getLeft().automato, node.getRight().automato);
         break;
-
-//      default:
-//        node.automato = node.automato.converter.automatoUnitario(new Regex(node.getSymbol()));
     }
 
-    printInorder(node.getRight());
   }
-
-  public int getNumberOfLeafs() {
-    return leafNodeID;
-  }
-
 }
