@@ -48,6 +48,37 @@ public class IOValidator {
     return tabelaTransicaoInt;
   }
 
+
+  public int[][][] convertMatrizIntegerToInt(Integer[][][] matriz, int tam1, int tam2, int tam3) {
+    int[][][] retorno = new int[tam1][tam2][tam3];
+    for (int i = 0; i < tam1 ; i++) {
+      for (int t = 0; t < tam2; t++) {
+        for (int x = 0; x < tam3; x++) {
+          if(matriz[i][t][x]!= null){
+            retorno[i][t][x] = matriz[i][t][x].intValue();
+          } else {
+            retorno[i][t][x] = -1;
+          }
+        }
+      }
+    }
+    return retorno;
+  }
+
+  public int[][] convertMatrizIntegerToInt(Integer[][] matriz, int tam1, int tam2) {
+    int[][] retorno = new int[tam1][tam2];
+    for (int i = 0; i < tam1; i++) {
+      for (int t = 0; t < tam2; t++) {
+        if (matriz[i][t] != null) {
+          retorno[i][t] = matriz[i][t].intValue();
+        } else {
+          retorno[i][t] = -1;
+        }
+      }
+    }
+    return retorno;
+  }
+
   /**
    * @param matriz
    * @return

@@ -1,9 +1,8 @@
 package expressoesregulares.conversao;
 import afnd.domain.NaoDeterministicoE;
-import afnd.exceptions.IsNotBelongOnLanguage;
 import expressoesregulares.Regex;
-import expressoesregulares.tree.BinaryTree;
-import expressoesregulares.tree.Node;
+import expressoesregulares.arvoresintatica.BinaryTree;
+import expressoesregulares.arvoresintatica.Node;
 
 import java.util.*;
 
@@ -24,16 +23,16 @@ public class ThompsonAlgorithm   {
    * ER(A) => M1 =  ( {q0, q1}, {a}, {(q0, a, q1)}, q0, {q1} )
    * @return
    */
-  public NFA automatoUnitario(Regex regex){
-    NFA nfa = new NFA();
-    nfa.K.add(estado + "");
-    nfa.K.add(estado+1 + "");
-    nfa.E.add(regex.getExpression());
-    nfa.delta.add(estado +","+regex.getExpression() +"," + (estado+1) + "");
-    nfa.s = estado+"";
-    nfa.F.add(estado+1+"");
+  public NfaMap automatoUnitario(Regex regex){
+    NfaMap nfaMap = new NfaMap();
+    nfaMap.K.add(estado + "");
+    nfaMap.K.add(estado+1 + "");
+    nfaMap.E.add(regex.getExpression());
+    nfaMap.delta.add(estado +","+regex.getExpression() +"," + (estado+1) + "");
+    nfaMap.s = estado+"";
+    nfaMap.F.add(estado+1+"");
     estado= estado+2;
-    return nfa;
+    return nfaMap;
   }
 
   /**
@@ -45,8 +44,8 @@ public class ThompsonAlgorithm   {
    * @param automato2
    * @return
    */
-  public NFA automatoConcatenacao(NFA automato1, NFA automato2){
-    NFA novoAutomato = new NFA();
+  public NfaMap automatoConcatenacao(NfaMap automato1, NfaMap automato2){
+    NfaMap novoAutomato = new NfaMap();
     automato1.E.add("ε");
     List<String> estados = Uniao(automato1.K, automato2.K);
     List<String> alfabeto= Uniao(automato1.E, automato2.E);
@@ -81,8 +80,8 @@ public class ThompsonAlgorithm   {
    * @param automato2
    * @return
    */
-  public NFA automatoEscolha(NFA automato1, NFA automato2){
-    NFA novoAutomato = new NFA();
+  public NfaMap automatoEscolha(NfaMap automato1, NfaMap automato2){
+    NfaMap novoAutomato = new NfaMap();
     String novoEstado = estado + "";
     estado++;
     novoAutomato.K = Uniao(automato1.K, automato2.K);
@@ -115,8 +114,8 @@ public class ThompsonAlgorithm   {
    * F = {qf}   (novo estado final)
    * @return
    */
-  public NFA automatoFechoDeKleene(NFA automato){
-    NFA novoAutomato = new NFA();
+  public NfaMap automatoFechoDeKleene(NfaMap automato){
+    NfaMap novoAutomato = new NfaMap();
     String novoEstadoFinal = estado + "";
     estado++;
     String novoEstadoInicial = estado + "";
@@ -192,7 +191,6 @@ public class ThompsonAlgorithm   {
    * @return
    */
   public NaoDeterministicoE transformRegexToAFND(Regex expressaoRegular){
-
     Node root = getArvore(expressaoRegular);
     int aceitacao[]  = root.automato.getF();
     int estadoInicial = root.automato.getS();
@@ -220,7 +218,6 @@ public class ThompsonAlgorithm   {
         }
       }
     }
-
     for (int j = 0; j < transicoesVazias.length; j++) {
       for (int k = 0; k < transicoesVazias[j].length; k++) {
         transicoesVazias[j][k]= -99;
@@ -267,7 +264,6 @@ public class ThompsonAlgorithm   {
         }
       }
     }
-
     return  new NaoDeterministicoE(aceitacao, estadoInicial, transicoes, transicoesVazias, alfabeto);
   }
 
@@ -311,24 +307,20 @@ public class ThompsonAlgorithm   {
         }
       }
     }
-
     return  (Collections.max(countMaxTransicoes.values()));
   }
 
 }
-
 
 class PosicaoLinha {
   List<AlfabetoColuna> alfabetoColunas = new ArrayList<AlfabetoColuna>();
   public PosicaoLinha(){
   }
 }
-//
+
 class AlfabetoColuna{
  List<Integer> transicao= new ArrayList<Integer>();
-  public AlfabetoColuna(){
-  }
-
+ public AlfabetoColuna(){ }
 }
 
 

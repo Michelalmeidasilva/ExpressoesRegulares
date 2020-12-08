@@ -2,11 +2,12 @@ package afnd.domain;
 
 import afnd.exceptions.IsNotBelongOnLanguage;
 import afnd.utils.IOValidator;
+
 import java.util.Set;
 import java.util.TreeSet;
 
 public class NaoDeterministicoE extends Automato {
-    static IOValidator validator = new IOValidator();
+     IOValidator validator = new IOValidator();
 
     /**
      * Construtor padrão passando todos os parametros para um automato finito nao deterministico com transição espontanea
@@ -29,7 +30,7 @@ public class NaoDeterministicoE extends Automato {
      * @param alfabeto
      */
     public NaoDeterministicoE(char[] aceitacao, char estadoInicial, char [][][] transicao, char [][] transicaoVazia , String alfabeto ) {
-        super(validator.convertArrayCharToArrayInt(aceitacao), estadoInicial,  validator.convertMatrizCharToInt(transicao), validator.convertMatrizCharToInt(transicaoVazia), alfabeto);
+//        super(validator.convertArrayCharToArrayInt(aceitacao), estadoInicial,  validator.convertMatrizCharToInt(transicao), validator.convertMatrizCharToInt(transicaoVazia), alfabeto);
     }
 
     /**
@@ -42,7 +43,6 @@ public class NaoDeterministicoE extends Automato {
      */
     public NaoDeterministicoE(int[] aceitacao, int estadoInicial, int [][][] transicao, String alfabeto ) {
         super(aceitacao, estadoInicial, transicao, alfabeto);
-        IOValidator validator = new IOValidator();
     }
 
     /** A aplicação é executada a partir da entrada podendo dar a exception da entrada nao pertencer ao alfabeto
@@ -58,12 +58,13 @@ public class NaoDeterministicoE extends Automato {
             return false;
         }
     }
+    boolean inicio = true;
 
     private int[] leitura(String entrada) throws IsNotBelongOnLanguage {
         int posicao = 0;
         int[] estados = eclose(new int[]{estadoInicial});
         while (posicao < entrada.length()) {
-            if (isDebug()) print(entrada, estados, posicao);
+
             String elemento = entrada.substring(posicao, posicao + 1);
             estados = controleFinito(estados, elemento);
             if (estados.length == 0) {
@@ -71,23 +72,22 @@ public class NaoDeterministicoE extends Automato {
             }
             posicao++;
         }
-        if (isDebug()) {
-            print(entrada, estados, posicao);
-        }
+
         return estados;
     }
 
     private int [] controleFinito(int [] estados, String elemento) throws IsNotBelongOnLanguage {
         int[] novosEstados = new int[]{};
         for (int i : estados) {
-            int iElemento = alfabeto.indexOf(elemento);
-            if (iElemento == -1)
-                throw new IsNotBelongOnLanguage( "elemento:{" + elemento + "} Nao pertence ao alfabeto" );
+                int iElemento = alfabeto.indexOf(elemento);
 
-            int[] destinoTransicao = transicao[i][iElemento];
-            novosEstados = uniao(novosEstados, destinoTransicao);
-            novosEstados = eclose(novosEstados);
+                if (iElemento == -1) {
+                    throw new IsNotBelongOnLanguage( "elemento:{" + elemento + "} Nao pertence ao alfabeto" );
+                }
 
+                int[] destinoTransicao = transicao[i][iElemento];
+                novosEstados = uniao(novosEstados, destinoTransicao);
+                novosEstados = eclose(novosEstados);
         }
 
         estados = novosEstados;
@@ -96,27 +96,36 @@ public class NaoDeterministicoE extends Automato {
 
     private int[] eclose(int[] estados) {
         int[] eclose = estados;
-        for (int i : estados) {
-            int[] ecloseAux = transicaoVazia[i];
-            int[] ecloseAux2 = eclose(ecloseAux);
-            eclose = uniao(eclose, ecloseAux);
-            eclose = uniao(eclose, ecloseAux2);
-        }
-        return eclose;
+            for (int i : estados) {
+                if (i != -99) {
+                    int[] ecloseAux = transicaoVazia[i];
+                    int[] ecloseAux2 = eclose(ecloseAux);
+                    eclose = uniao(eclose, ecloseAux);
+                    eclose = uniao(eclose, ecloseAux2);
+                }
+            }
+            return eclose;
+
     }
 
     private int[] uniao(int[] estados, int[] novosEstados) {
         Set<Integer> uniao = new TreeSet<Integer>();
         for (int i : estados) {
-            uniao.add(i);
+            if(i != - 99) {
+                uniao.add(i);
+            }
         }
         for (int i : novosEstados) {
-            uniao.add(i);
+            if(i != - 99){
+                uniao.add(i);
+            }
         }
         int[] ret = new int[uniao.size()];
         int j = 0;
         for (int i : uniao) {
-            ret[j++] = i;
+            if(i != - 99) {
+                ret[j++] = i;
+            }
         }
         return ret;
     }
